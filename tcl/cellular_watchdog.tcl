@@ -84,14 +84,6 @@ foreach {element value} [array get error_arr] {
 puts "$element $value"
 }
 
-set oid "1.3.6.1.4.1.9.9.661.1.3.4.1.1.1"
-array set error_arr [sys_reqinfo_snmp oid $oid get_type next]
-set c3gCurrentGsmRssi $error_arr(value)
-
-foreach {element value} [array get error_arr] {
-puts "$element $value"
-}
-
 if {$c3gGsmCurrentServiceStatus != "3"} {
   if [catch {cli_open} result] {
     error $result $errorInfo
@@ -117,7 +109,7 @@ if {$c3gGsmCurrentServiceStatus != "3"} {
      after 30000
      array set status_arr [sys_reqinfo_snmp oid 1.3.6.1.4.1.9.9.661.1.3.2.1.2 get_type next]
      set c3gGsmCurrentServiceStatus $status_arr(value)
-     action_syslog msg "INFO: Cellular modem status is now $c3gGsmCurrentServiceStatus. Current RSSI is $c3gCurrentGsmRssi."
+     action_syslog msg "INFO: Cellular modem status is now $c3gGsmCurrentServiceStatus."
 
   if [catch {cli_exec $cli1(fd) "show $interface network" } result ] {
      error $result $errorInfo
@@ -152,7 +144,7 @@ if {$c3gGsmCurrentServiceStatus != "3"} {
        after 30000
        array set error_arr [sys_reqinfo_snmp oid 1.3.6.1.4.1.9.9.661.1.3.2.1.3 get_type next]
        set c3gGsmCurrentServiceError $error_arr(value)
-       action_syslog msg "INFO: Cellular modem error is now $c3gGsmCurrentServiceError. Current RSSI is $c3gCurrentGsmRssi."
+       action_syslog msg "INFO: Cellular modem error is now $c3gGsmCurrentServiceError."
 
     if [catch {cli_exec $cli1(fd) "show $interface network" } result ] {
        error $result $errorInfo
@@ -162,6 +154,6 @@ if {$c3gGsmCurrentServiceStatus != "3"} {
     \n"
      catch {cli_close $cli1(fd) $cli1(tty_id)}
     } else {
-      action_syslog msg "INFO: Cellular Modem Status: $c3gGsmCurrentServiceStatus, Error Code: $c3gGsmCurrentServiceError, RSSI $c3gCurrentGsmRssi - no action required."
+      action_syslog msg "INFO: Cellular Modem Status: $c3gGsmCurrentServiceStatus, Error Code: $c3gGsmCurrentServiceError - no action required."
     }
 }
